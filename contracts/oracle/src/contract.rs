@@ -1,7 +1,7 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    to_binary, from_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
 };
 use cw2::set_contract_version;
 
@@ -23,6 +23,12 @@ pub fn instantiate(
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
+    let state = State {
+        owner: _info.sender.clone(),
+        price: 0,
+    };
+    STATE.save(deps.storage, &state)?;
+
     // TODO: instantiate contract
     Ok(Response::new())
 }
@@ -43,7 +49,7 @@ pub fn execute(
 }
 
 fn try_update_price(deps: DepsMut, info: MessageInfo, price: u64) -> Result<Response, ContractError> {
-    
+
     let current_price = 10; // Luna / Mango
 
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
@@ -55,22 +61,20 @@ fn try_update_price(deps: DepsMut, info: MessageInfo, price: u64) -> Result<Resp
     })?;
 
     Ok(Response::new().add_attribute("method", "try_update_price"))
-    
+
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
     match _msg {
-        QueryMsg::QueryPrice {} => to_binary(&query_price(deps)?),
+        QueryMsg::QueryPrice {} => to_binary(&query_price(_deps)?),
     }
     // Err(StdError::generic_err("not implemented"))
 }
 
-
-
-fn query_price(deps: Deps) -> StdResult<OwnerResponse> {
+fn query_price(deps: Deps) -> StdResult<u64> {
     let state = STATE.load(deps.storage)?;
-    Ok(OwnerResponse { owner: state.price })
+    Ok(state.price)
 }
 
 
@@ -93,9 +97,10 @@ mod tests {
         assert_eq!(0, res.messages.len());
 
         // it worked, let's query the state
-        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {});
-        assert_eq!(res, Err(StdError::generic_err("not implemented")));
-        //assert_eq!(17, value.price);
+        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {}).unwrap();
+        let price: u64 = from_binary(&res).unwrap();
+        //assert_eq!(price, Err(StdError::generic_err("not implemented")));
+        assert_eq!(0, price);
     }
 
     #[test]
