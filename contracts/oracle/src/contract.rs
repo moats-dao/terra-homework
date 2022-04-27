@@ -1,8 +1,7 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, from_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
-};
+    to_binary, from_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult, Uint128};
 use cw2::set_contract_version;
 
 use crate::error::ContractError;
@@ -25,7 +24,7 @@ pub fn instantiate(
 
     let state = State {
         owner: _info.sender.clone(),
-        price: 0,
+        price: Uint128::from(_msg.price),
     };
     STATE.save(deps.storage, &state)?;
 
@@ -48,9 +47,9 @@ pub fn execute(
     // Ok(Response::new())
 }
 
-fn try_update_price(deps: DepsMut, info: MessageInfo, price: u64) -> Result<Response, ContractError> {
+fn try_update_price(deps: DepsMut, info: MessageInfo, price: Uint128) -> Result<Response, ContractError> {
 
-    let current_price = 10; // Luna / Mango
+    let current_price = Uint128::from(price); // Luna / Mango
 
     STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
         if info.sender != state.owner {
@@ -72,7 +71,7 @@ pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
     // Err(StdError::generic_err("not implemented"))
 }
 
-fn query_price(deps: Deps) -> StdResult<u64> {
+fn query_price(deps: Deps) -> StdResult<Uint128> {
     let state = STATE.load(deps.storage)?;
     Ok(state.price)
 }
@@ -89,20 +88,41 @@ mod tests {
     fn proper_initialization() {
         let mut deps = mock_dependencies(&[]);
 
-        let msg = InstantiateMsg { price: 17 };
+            // instantiate
+        let msg = InstantiateMsg { price: Uint128::from(17u128) };
         let info = mock_info("creator", &coins(1000, "earth"));
-
-        // we can just call .unwrap() to assert this was a success
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         assert_eq!(0, res.messages.len());
 
-        // it worked, let's query the state
-        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {}).unwrap();
-        let price: u64 = from_binary(&res).unwrap();
-        //assert_eq!(price, Err(StdError::generic_err("not implemented")));
-        assert_eq!(0, price);
+            // instantiate test
+        let msg = QueryMsg::QueryPrice {};
+        let res = query(deps.as_ref(), mock_env(), msg).unwrap();
+        let price: Uint128 = from_binary(&res).unwrap();
+        assert_eq!(Uint128::from(17u128), price);
     }
 
-    #[test]
-    fn increment() {}
+    // #[test]
+    // fn test_update_price() {
+
+    //     let mut deps = mock_dependencies(&[]);
+
+    //     let msg = InstantiateMsg { price: 17 };
+    //     let info = mock_info("creator", &coins(1000, "earth"));
+
+    //         // instantiate
+    //     let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+    //     assert_eq!(0, res.messages.len());
+
+
+    //         // instantiate
+    //     let msg = ExecuteMsg::UpdatePrice { price: (25) };
+    //     let info = mock_info("creator", &coins(1000, "earth"));
+    //     let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+    //     assert_eq!(0, res.messages.len());
+
+    //             let msg = ExecuteMsg::StartGame {opponent: Addr::unchecked(""), first_move: GameMove::Rock}; // pass in Addr not yet validated - we pass in an empty &str, which should be invalid, since an Addr can't be nothing
+    //     let info = mock_info("host", &coins(2, "token"));
+    //     let result = execute(deps.as_mut(), mock_env(), info, msg);
+
+    // }
 }
