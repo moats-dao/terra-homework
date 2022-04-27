@@ -24,8 +24,8 @@ pub fn instantiate(
 
     let state = State {
         owner: _info.sender.clone(),
-        //price: Uint128::from(_msg.price),
-        price: Uint128::from(11u128),
+        price: Uint128::from(_msg.price),
+        //price: Uint128::from(11u128),
     };
     STATE.save(deps.storage, &state)?;
 
@@ -90,8 +90,8 @@ mod tests {
         let mut deps = mock_dependencies(&[]);
 
             // instantiate
-        //let msg = InstantiateMsg { price: Uint128::from(17u128) };
-        let msg = InstantiateMsg { };
+        let msg = InstantiateMsg { price: Uint128::from(17u128) };
+        //let msg = InstantiateMsg { };
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         assert_eq!(0, res.messages.len());
@@ -109,8 +109,8 @@ mod tests {
         let mut deps = mock_dependencies(&[]);
 
             // instantiate
-        //let msg = InstantiateMsg { price: Uint128::from(17u128) };
-        let msg = InstantiateMsg { };
+        let msg = InstantiateMsg { price: Uint128::from(17u128) };
+        //let msg = InstantiateMsg { };
         let info = mock_info("creator", &coins(1000, "earth"));
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         assert_eq!(0, res.messages.len());
