@@ -3,12 +3,11 @@
   "title": "InstantiateMsg",
   "type": "object",
   "required": [
-    "price"
   ],
   "properties": {
     "price": {
       "type": "integer",
-      "format": "uint64",
+      "format": "uint128",
       "minimum": 0.0
     }
   }
