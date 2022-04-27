@@ -34,7 +34,26 @@ pub fn execute(
     _msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     //TODO: execute try_update_price
+    match msg {
+        ExecuteMsg::UpdatePrice { price } => try_update_price(price),
+    }
+
     Ok(Response::new())
+}
+
+fn try_update_price(price: u64) -> Result<Response, ContractError> {
+
+    
+    let currentPrice = ;
+
+    STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+        state.count = currentPrice;
+        Ok(state)
+    })?;
+
+    Ok(Response::new().add_attribute("method", "try_update_price"))
+    
+    
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
