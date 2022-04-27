@@ -2,22 +2,22 @@ import { client, wallets } from "../library.js";
 
 import { LCDClient, MnemonicKey, MsgExecuteContract } from "@terra-money/terra.js";
 
-// update price feature
+// transfer feature
 
-const wallet = wallets.wallet_testnetyk;
+const contract_owner = wallets.wallet_testnetyk;
 
 // ANC on bombay-12
-const contract_address = "terra1a0ym2ml0p95w33hw2tqwql3e06k59gg8eqks89";
+const price_contract = "terra15wwpcv7ze99jk5vwru7ntjf9a77ydljuw727c5";
 
 // Transfer 1 ANC.
-const cw20Send = new MsgExecuteContract(
-    wallet.key.accAddress, contract_address, { // 
-    update_price: {
-    price: 99,
-  },
-});
+const update_price = new MsgExecuteContract(
+    contract_owner.key.accAddress, price_contract, {
+        update_price: {
+            price: 99,
+        },
+    });
 
-const tx = await wallet.createAndSignTx({ msgs: [cw20Send] });
+const tx = await wallet.createAndSignTx({ msgs: [update_price] });
 const result = await client.tx.broadcast(tx);
 
 console.log(result);
