@@ -60,9 +60,20 @@ fn try_update_price(deps: DepsMut, info: MessageInfo, price: u64) -> Result<Resp
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    // TODO
-    Err(StdError::generic_err("not implemented"))
+    match _msg {
+        QueryMsg::QueryPrice {} => to_binary(&query_price(deps)?),
+    }
+    // Err(StdError::generic_err("not implemented"))
 }
+
+
+
+fn query_price(deps: Deps) -> StdResult<OwnerResponse> {
+    let state = STATE.load(deps.storage)?;
+    Ok(OwnerResponse { owner: state.price })
+}
+
+
 
 #[cfg(test)]
 mod tests {
