@@ -2,7 +2,7 @@ import { client, wallets } from "../library.js";
 
 import { LCDClient, MnemonicKey, MsgExecuteContract } from "@terra-money/terra.js";
 
-// transfer feature
+// update price feature
 
 const wallet = wallets.wallet_testnetyk;
 

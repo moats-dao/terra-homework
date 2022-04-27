@@ -7,9 +7,11 @@ import {
   LCDClient,
 } from "@terra-money/terra.js";
 
-const price_contract = "terraOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
+const wallet = wallets.wallet_testnetyk;
 
-const response = await client.wasm.contractQuery(price_contract, { balance: { address: walletAddress } });
+const price_contract = "terra15wwpcv7ze99jk5vwru7ntjf9a77ydljuw727c5";
+
+const response = await client.wasm.contractQuery(price_contract, { query_price: {} });
 
 console.log(response);
 
