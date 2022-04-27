@@ -101,28 +101,30 @@ mod tests {
         assert_eq!(Uint128::from(17u128), price);
     }
 
-    // #[test]
-    // fn test_update_price() {
+    #[test]
+    fn test_update_price() {
 
-    //     let mut deps = mock_dependencies(&[]);
+        let mut deps = mock_dependencies(&[]);
 
-    //     let msg = InstantiateMsg { price: 17 };
-    //     let info = mock_info("creator", &coins(1000, "earth"));
+            // instantiate
+        let msg = InstantiateMsg { price: Uint128::from(17u128) };
+        let info = mock_info("creator", &coins(1000, "earth"));
+        let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
+        assert_eq!(0, res.messages.len());
 
-    //         // instantiate
-    //     let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
-    //     assert_eq!(0, res.messages.len());
 
 
-    //         // instantiate
-    //     let msg = ExecuteMsg::UpdatePrice { price: (25) };
-    //     let info = mock_info("creator", &coins(1000, "earth"));
-    //     let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
-    //     assert_eq!(0, res.messages.len());
 
-    //             let msg = ExecuteMsg::StartGame {opponent: Addr::unchecked(""), first_move: GameMove::Rock}; // pass in Addr not yet validated - we pass in an empty &str, which should be invalid, since an Addr can't be nothing
-    //     let info = mock_info("host", &coins(2, "token"));
-    //     let result = execute(deps.as_mut(), mock_env(), info, msg);
 
-    // }
+        // user can submit own address
+        let msg = ExecuteMsg::UpdatePrice { price: (Uint128::from(25u128)) };
+        let info = mock_info("creator", &coins(2, "earth")); // we redeclare info here since we moved it into instantiate() for _res
+        let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
+
+            // query entry
+        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {}).unwrap(); // as_ref, so, not as_mut        also,   .unwrap()    not safe to do in the code, but can be done in tests all you want
+        let new_price: Uint128 = from_binary(&res).unwrap(); // change back to not binary, i.e. de serialize it    from_binary returns a Result
+        assert_eq!(Uint128::from(25u128), new_price); // we grab the value associated with "creator" in our Map      and see if it's 1
+    
+    }
 }
