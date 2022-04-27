@@ -112,13 +112,9 @@ mod tests {
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         assert_eq!(0, res.messages.len());
 
-
-
-
-
             // UpdatePrice
         let msg = ExecuteMsg::UpdatePrice { price: (Uint128::from(25u128)) };
-        let info = mock_info("creator", &coins(2, "earth")); // we redeclare info here since we moved it into instantiate() for _res
+        let info = mock_info("creator", &coins(1000, "earth")); // we redeclare info here since we moved it into instantiate() for _res
         let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
 
             // UpdatePrice test
