@@ -7,7 +7,7 @@ import {
   LCDClient,
 } from "@terra-money/terra.js";
 
-const wallet = wallets.wallet_testnetyk;
+// const wallet = wallets.wallet_testnetyk;
 
 const price_contract = "terra15wwpcv7ze99jk5vwru7ntjf9a77ydljuw727c5";
 
