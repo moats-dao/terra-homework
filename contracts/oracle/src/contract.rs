@@ -1,7 +1,7 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    to_binary, from_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
 };
 use cw2::set_contract_version;
 
@@ -22,6 +22,12 @@ pub fn instantiate(
     _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
+    let state = State {
+        owner: _info.sender.clone(),
+        price: 0,
+    };
+    STATE.save(deps.storage, &state)?;
 
     // TODO: instantiate contract
     Ok(Response::new())
@@ -91,9 +97,10 @@ mod tests {
         assert_eq!(0, res.messages.len());
 
         // it worked, let's query the state
-        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {});
-        assert_eq!(res, Err(StdError::generic_err("not implemented")));
-        //assert_eq!(17, value.price);
+        let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {}).unwrap();
+        let price: u64 = from_binary(&res).unwrap();
+        //assert_eq!(price, Err(StdError::generic_err("not implemented")));
+        assert_eq!(0, price);
     }
 
     #[test]
