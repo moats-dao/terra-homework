@@ -7,6 +7,7 @@ use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::state::{STATE, State};
 
 
 // version info for migration info
@@ -34,14 +35,45 @@ pub fn execute(
     _msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     //TODO: execute try_update_price
-    Ok(Response::new())
+    match _msg {
+        ExecuteMsg::UpdatePrice { price } => try_update_price(_deps, _info, price),
+    }
+
+    // Ok(Response::new())
+}
+
+fn try_update_price(deps: DepsMut, info: MessageInfo, price: u64) -> Result<Response, ContractError> {
+    
+    let current_price = 10; // Luna / Mango
+
+    STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+        if info.sender != state.owner {
+            return Err(ContractError::Unauthorized {});
+        }
+        state.price = current_price;
+        Ok(state)
+    })?;
+
+    Ok(Response::new().add_attribute("method", "try_update_price"))
+    
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
-    // TODO
-    Err(StdError::generic_err("not implemented"))
+    match _msg {
+        QueryMsg::QueryPrice {} => to_binary(&query_price(deps)?),
+    }
+    // Err(StdError::generic_err("not implemented"))
 }
+
+
+
+fn query_price(deps: Deps) -> StdResult<OwnerResponse> {
+    let state = STATE.load(deps.storage)?;
+    Ok(OwnerResponse { owner: state.price })
+}
+
+
 
 #[cfg(test)]
 mod tests {
