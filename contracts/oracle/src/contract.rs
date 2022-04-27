@@ -116,12 +116,12 @@ mod tests {
 
 
 
-        // user can submit own address
+            // UpdatePrice
         let msg = ExecuteMsg::UpdatePrice { price: (Uint128::from(25u128)) };
         let info = mock_info("creator", &coins(2, "earth")); // we redeclare info here since we moved it into instantiate() for _res
         let _res = execute(deps.as_mut(), mock_env(), info, msg).unwrap();
 
-            // query entry
+            // UpdatePrice test
         let res = query(deps.as_ref(), mock_env(), QueryMsg::QueryPrice {}).unwrap(); // as_ref, so, not as_mut        also,   .unwrap()    not safe to do in the code, but can be done in tests all you want
         let new_price: Uint128 = from_binary(&res).unwrap(); // change back to not binary, i.e. de serialize it    from_binary returns a Result
         assert_eq!(Uint128::from(25u128), new_price); // we grab the value associated with "creator" in our Map      and see if it's 1
