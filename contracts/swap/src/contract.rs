@@ -3,7 +3,7 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::testing::MOCK_CONTRACT_ADDR;
 use cosmwasm_std::{
     Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdError,
-    StdResult,
+    StdResult, WasmQuery,
 };
 
 use cw2::set_contract_version;
@@ -49,11 +49,102 @@ pub fn execute(
 pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
     // query current luna/mango price
+
+    let oracle_contract_addr_as_string = "";
+
+    let price = deps.querier.query(&QueryRequest::Wasm(WasmQuery::Smart{
+        contract_addr: oracle_contract_addr_as_string, // the contract of which we want to query the public API of
+        msg: to_binary(&QueryMsg::QueryPrice {})?,
+    }))?;
+
     
     // check if contract has enough mango to give
         // fail if contract doesn't have enough mango
     // contract keeps luna
     // contract gives mango
+
+    
+
+    let mut num_lunas = Uint128::zero();
+
+    for coin in info.funds.iter() {
+        if coin.denom == "uluna" {
+            num_lunas = coin.amount;
+        }
+    }
+
+
+
+
+
+
+
+    let dex_contract_addr = "";
+
+    let token_contract_addr = "";
+
+    let balance: Uint128 = deps.querier.query(&QueryRequest::Wasm(WasmQuery::Smart {
+        contract_addr: token_contract_addr, ???
+        msg: to_binary(&Cw20QueryMsg::Balance {address: dex_contract_addr.to_string(), 
+        })?, 
+    })).unwrap_or_else(|_| Uint128::zero());
+
+
+
+
+
+
+    let balance_response: BalanceResponse = deps.querier.query(&QueryRequest::Wasm(WasmQuery::Smart {
+        contract_addr: String::from(oracle_contract),
+        msg: to_binary(&cw20::Cw20QueryMsg::Balance {
+            address: oracle_contract.to_string(),
+        })?,
+    }))?;
+
+
+
+    pub fn query_boost_amount(
+        querier: &QuerierWrapper,
+        boost_contract: &Addr,
+        address: &Addr,
+    ) -> StdResult<Uint128> {
+        
+
+        let balance_response: BalanceResponse = deps.querier.query(&QueryRequest::Wasm(WasmQuery::Smart {
+            contract_addr: String::from(oracle_contract),
+            msg: to_binary(&cw20::Cw20QueryMsg::Balance {
+                address: oracle_contract.to_string(),
+            })?,
+        }))?;
+    
+        Ok(res.total_boost)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    let get_balance_msg = cw20::Cw20QueryMsg::Balance { address: String::from("") };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -129,6 +220,31 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
     Ok(Response::new().add_attribute("method", "try_buy"))
 }
+
+
+pub fn query_token_balance(
+    deps: Deps,
+    contract_addr: Addr,
+    account_addr: Addr,
+) -> StdResult<Uint256> {
+    // load balance form the token contract
+    let balance: Uint128 = deps
+        .querier
+        .query(&QueryRequest::Wasm(WasmQuery::Smart {
+            contract_addr: contract_addr.to_string(),
+            msg: to_binary(&Cw20QueryMsg::Balance {
+                address: account_addr.to_string(),
+            })?,
+        }))
+        .unwrap_or_else(|_| Uint128::zero());
+
+    Ok(balance.into())
+}
+
+
+
+
+
 
 pub fn try_withdraw() {
 
