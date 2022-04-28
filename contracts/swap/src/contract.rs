@@ -68,21 +68,21 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
 
 
-        // receive
+        // receive - 따로 transfer 할 필요? 아니면 그냥 contract 에다 보내진 양 storage 에다 저장?
 
-    let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
+    // let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
 
-    let this_contract_contract_helper = Cw20Contract(info.sender);
+    // let this_contract_contract_helper = Cw20Contract(info.sender);
     
-    let state = STATE.load(deps.storage)?;
+    // let state = STATE.load(deps.storage)?;
 
-    let contract_addr = state.token_address;
+    // let contract_addr = state.token_address;
 
-    let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
-        recipient: contract_addr, // pot.target_addr.into_string()
-        amount: received_luna_amount,
-    })?;
-    res = res.add_message(msg);
+    // let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
+    //     recipient: contract_addr, // pot.target_addr.into_string()
+    //     amount: received_luna_amount,
+    // })?;
+    // res = res.add_message(msg);
 
 
 
@@ -93,15 +93,24 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
     let token_amount_to_give = ???; // query Luna/Mango exchange rate from Oracle contract
     
-    let recipient_contract_helper = Cw20Contract(info.sender);
-
     let recipient_addr = ???; // Luna sender address (is this info.sender?  그럼 위에서 why if state.token_address != info.sender)
 
-    let msg = recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
-        recipient: recipient_addr, // pot.target_addr.into_string()
+    let recipient_contract_helper = Cw20Contract(info.sender); // here    info.sender    should be equal to token_address (위에서 확인)
+
+    recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
+        recipient: recipient_addr,
         amount: token_amount_to_give
     })?;
-    res = res.add_message(msg);
+
+    
+
+
+
+    // let msg = recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
+    //     recipient: recipient_addr, // pot.target_addr.into_string()
+    //     amount: token_amount_to_give
+    // })?;
+    // res = res.add_message(msg);
 
 
 
