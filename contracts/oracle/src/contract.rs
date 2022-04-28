@@ -48,7 +48,7 @@ pub fn execute(
     // Ok(Response::new())
 }
 
-fn try_update_price(deps: DepsMut, info: MessageInfo, price: Uint128) -> Result<Response, ContractError> {
+pub fn try_update_price(deps: DepsMut, info: MessageInfo, price: Uint128) -> Result<Response, ContractError> {
 
     let current_price = Uint128::from(price); // Luna / Mango
 

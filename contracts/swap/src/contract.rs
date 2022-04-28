@@ -1,11 +1,13 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
+use cosmwasm_std::testing::MOCK_CONTRACT_ADDR;
 use cosmwasm_std::{
     Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdError,
     StdResult,
 };
 
 use cw2::set_contract_version;
+use cw20::{Cw20Contract, Cw20ExecuteMsg, Cw20ReceiveMsg}; // ADDED
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
@@ -23,7 +25,7 @@ pub fn instantiate(
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    // TODO
+
     Ok(Response::new())
 }
 
@@ -34,9 +36,95 @@ pub fn execute(
     _info: MessageInfo,
     _msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    // TODO
+    match _msg {
+        ExecuteMsg::Buy {} => try_buy(_deps, _info, _msg),
+        ExecuteMsg::Withdraw { amount } => try_withdraw(),
+    }
+
     Err(ContractError::NotImplemented {})
 }
+
+
+pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
+
+    // query current luna/mango price
+    
+    // check if contract has enough mango to give
+        // fail if contract doesn't have enough mango
+    // contract keeps luna
+    // contract gives mango
+
+
+
+    
+        // cw20 address authentication
+    let config = CONFIG.load(deps.storage)?;
+    if config.token_address != info.sender {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    let valid_swap = false;
+
+
+
+    if valid_swap {
+
+        // 이렇게 using exmaples - how did we do: mint, hooks, addr
+            // 아 오케이 - snap snap 고 고
+
+
+
+
+
+            // receive
+
+        let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
+
+        let this_contract_contract_helper = Cw20Contract(info.sender);
+        
+        let state = STATE.load(deps.storage)?;
+
+        let contract_addr = state.token_address;
+
+        let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
+            recipient: contract_addr, // pot.target_addr.into_string()
+            amount: received_luna_amount,
+        })?;
+        res = res.add_message(msg);
+
+
+
+        
+
+
+            // send to buyer wallet
+
+        let token_amount_to_give = ???; // query Luna/Mango exchange rate from Oracle contract
+        
+        let recipient_contract_helper = Cw20Contract(info.sender);
+
+        let recipient_addr = info.sender;
+
+        let msg = recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
+            recipient: recipient_addr, // pot.target_addr.into_string()
+            amount: token_amount_to_give
+        })?;
+        res = res.add_message(msg);
+
+
+
+
+
+
+    }
+
+    Ok(Response::new().add_attribute("method", "try_buy"))
+}
+
+pub fn try_withdraw() {
+
+}
+
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn migrate(_deps: DepsMut, _env: Env, _msg: Empty) -> StdResult<Response> {
