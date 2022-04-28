@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 // import fs from "fs";
 
@@ -10,8 +10,6 @@ import fetch from 'isomorphic-fetch';
 import { Coins, LCDClient } from '@terra-money/terra.js';
 const gasPrices =  await fetch('https://bombay-fcd.terra.dev/v1/txs/gas_prices');
 const gasPricesJson = await gasPrices.json();
-url_request = Request("https://fcd.terra.dev/v1/txs/gas_prices", headers=    {"User-Agent": "Mozilla/5.0"})
-live_gas_prices =         json.loads(urllib.request.urlopen(url_request).read().decode())
 
 // LCD stands for "Light Client Daemon". I don't really know much about it, but
 // this is how you talk to Terra from JS.

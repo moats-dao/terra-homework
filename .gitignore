@@ -9,6 +9,8 @@ contracts/*/artifacts
 # This repo specific
 keys.terrain.js
 keys.json
+code_id.json
+contract_address.json
 
 # VSCode related
 launch.json

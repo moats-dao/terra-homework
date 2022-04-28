@@ -13,9 +13,9 @@ url_request = Request("https://fcd.terra.dev/v1/txs/gas_prices", headers=    {"U
 live_gas_prices = json.loads(urllib.request.urlopen(url_request).read().decode())
 
 # Opening JSON file
-f = open('keys.json')
-# returns JSON object as a dictionary
-walletMnemonics = json.load(f)
+with open('keys.json') as f:
+    # returns JSON object as a dictionary
+    walletMnemonics = json.load(f)
 
 terra = LCDClient(
     url="https://bombay-lcd.terra.dev/",
@@ -31,38 +31,6 @@ store_code_tx_result = terra.tx.broadcast(store_code_tx)
 print(store_code_tx_result)
 
 code_id = store_code_tx_result.logs[0].events_by_type["store_code"]["code_id"][0]
-instantiate = MsgInstantiateContract(
-    test1.key.acc_address,
-    test1.key.acc_address,
-    int(code_id),
-    {},
-    {"uluna": 1000000, "uusd": 1000000}
-)
-instantiate_tx = test1.create_and_sign_tx(CreateTxOptions(msgs=[instantiate]))
-instantiate_tx_result = terra.tx.broadcast(instantiate_tx)
-print(instantiate_tx_result)
 
-contract_address = instantiate_tx_result.logs[0].events_by_type[
-    "instantiate_contract"
-]["contract_address"][0]
-
-import sys
-sys.exit()
-
-execute = MsgExecuteContract(
-    test1.key.acc_address,
-    test1.key.acc_address,
-    contract_address,
-    {"increment": {}},
-    {"uluna": 100000},
-)
-
-execute_tx = test1.create_and_sign_tx(
-    CreateTxOptions(msgs=[execute], fee=Fee(1000000, Coins(uluna=1000000)))
-)
-
-execute_tx_result = terra.tx.broadcast(execute_tx)
-print(execute_tx_result)
-
-result = terra.wasm.contract_query(contract_address, {"get_count": {}})
-print(result)
+with open('code_id.json', 'w') as f:
+    json.dump(code_id, f)
