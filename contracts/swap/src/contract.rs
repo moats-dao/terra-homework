@@ -11,6 +11,7 @@ use cw20::{Cw20Contract, Cw20ExecuteMsg, Cw20ReceiveMsg}; // ADDED
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::state::{STATE, DEX};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:swap";
@@ -56,9 +57,6 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
 
 
-        // 이렇게 using exmaples - how did we do: mint, hooks, addr
-
-
 
     let state = STATE.load(deps.storage)?;
     if state.token_address != info.sender {
@@ -68,32 +66,42 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
 
 
+
+
+
         // receive - 따로 transfer 할 필요? 아니면 그냥 contract 에다 보내진 양 storage 에다 저장?
 
-    // let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
+    let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;    
 
-    // let this_contract_contract_helper = Cw20Contract(info.sender);
+    let dex = DEX.load(deps.storage)?;
+
+    dex.luna_balance += received_luna_amount;
+
+    DEX.save(deps.storage, &dex)?;
+
+
+    let contract_addr = state.token_address;
+
+    let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
+        recipient: contract_addr, // pot.target_addr.into_string()
+        amount: received_luna_amount,
+    })?;
+    res = res.add_message(msg);
+
+
     
-    // let state = STATE.load(deps.storage)?;
-
-    // let contract_addr = state.token_address;
-
-    // let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
-    //     recipient: contract_addr, // pot.target_addr.into_string()
-    //     amount: received_luna_amount,
-    // })?;
-    // res = res.add_message(msg);
-
-
-
     
 
 
         // send to buyer wallet
 
     let token_amount_to_give = ???; // query Luna/Mango exchange rate from Oracle contract
+
+    dex.token_balance -= token_amount_to_give;
+
+    DEX.save(deps.storage, &dex)?;
     
-    let recipient_addr = ???; // Luna sender address (is this info.sender?  그럼 위에서 why if state.token_address != info.sender)
+    let recipient_addr = received_msg.sender? ???; // Luna sender address (is this info.sender?  그럼 위에서 why if state.token_address != info.sender)     received_msg.sender?
 
     let recipient_contract_helper = Cw20Contract(info.sender); // here    info.sender    should be equal to token_address (위에서 확인)
 
@@ -102,7 +110,7 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
         amount: token_amount_to_give
     })?;
 
-    
+
 
 
 
