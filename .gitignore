@@ -5,4 +5,10 @@ contracts/*/target
 artifacts/
 contracts/*/artifacts
 .DS_Store
+
+# This repo specific
 keys.terrain.js
+keys.json
+
+# VSCode related
+launch.json
