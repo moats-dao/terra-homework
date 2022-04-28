@@ -1,4 +1,4 @@
-#[cfg(not(feature = "library"))]
+    #[cfg(not(feature = "library"))]
 use cosmwasm_std::{Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdError, StdResult};
 
 use crate::token::InstantiateMsg;
