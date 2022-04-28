@@ -37,7 +37,7 @@ pub fn execute(
     _msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match _msg {
-        ExecuteMsg::Buy {} => try_buy(_deps, _info, _msg),
+        ExecuteMsg::Buy (cw20_msg) => try_buy(_deps, _info, cw20_msg),
         ExecuteMsg::Withdraw { amount } => try_withdraw(),
     }
 
@@ -56,67 +56,59 @@ pub fn try_buy(deps: DepsMut, info: MessageInfo, received_msg: Cw20ReceiveMsg) {
 
 
 
-    
-        // cw20 address authentication
-    let config = CONFIG.load(deps.storage)?;
-    if config.token_address != info.sender {
+        // 이렇게 using exmaples - how did we do: mint, hooks, addr
+
+
+
+    let state = STATE.load(deps.storage)?;
+    if state.token_address != info.sender {
         return Err(ContractError::Unauthorized {});
     }
 
-    let valid_swap = false;
 
 
 
-    if valid_swap {
+        // receive
 
-        // 이렇게 using exmaples - how did we do: mint, hooks, addr
-            // 아 오케이 - snap snap 고 고
+    let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
 
+    let this_contract_contract_helper = Cw20Contract(info.sender);
+    
+    let state = STATE.load(deps.storage)?;
 
+    let contract_addr = state.token_address;
 
-
-
-            // receive
-
-        let received_luna_amount: Cw20ReceiveMsg = received_msg.amount;
-
-        let this_contract_contract_helper = Cw20Contract(info.sender);
-        
-        let state = STATE.load(deps.storage)?;
-
-        let contract_addr = state.token_address;
-
-        let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
-            recipient: contract_addr, // pot.target_addr.into_string()
-            amount: received_luna_amount,
-        })?;
-        res = res.add_message(msg);
+    let msg = this_contract_contract_helper.call(Cw20ExecuteMsg::Transfer {
+        recipient: contract_addr, // pot.target_addr.into_string()
+        amount: received_luna_amount,
+    })?;
+    res = res.add_message(msg);
 
 
 
-        
+    
 
 
-            // send to buyer wallet
+        // send to buyer wallet
 
-        let token_amount_to_give = ???; // query Luna/Mango exchange rate from Oracle contract
-        
-        let recipient_contract_helper = Cw20Contract(info.sender);
+    let token_amount_to_give = ???; // query Luna/Mango exchange rate from Oracle contract
+    
+    let recipient_contract_helper = Cw20Contract(info.sender);
 
-        let recipient_addr = info.sender;
+    let recipient_addr = ???; // Luna sender address (is this info.sender?  그럼 위에서 why if state.token_address != info.sender)
 
-        let msg = recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
-            recipient: recipient_addr, // pot.target_addr.into_string()
-            amount: token_amount_to_give
-        })?;
-        res = res.add_message(msg);
+    let msg = recipient_contract_helper.call(Cw20ExecuteMsg::Transfer {
+        recipient: recipient_addr, // pot.target_addr.into_string()
+        amount: token_amount_to_give
+    })?;
+    res = res.add_message(msg);
 
 
 
 
 
 
-    }
+    
 
     Ok(Response::new().add_attribute("method", "try_buy"))
 }
