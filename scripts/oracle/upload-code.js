@@ -12,7 +12,6 @@ const storeCode = new MsgStoreCode(wallet.key.accAddress, fs.readFileSync("./art
 // update price feature
 
 // ANC on bombay-12
-const contract_address = "terra1a0ym2ml0p95w33hw2tqwql3e06k59gg8eqks89";
 const storeCodeTx = await wallet.createAndSignTx({
   msgs: [storeCode],
 });
@@ -25,9 +24,11 @@ if (isTxError(storeCodeTxResult)) {
     `store code failed. code: ${storeCodeTxResult.code}, codespace: ${storeCodeTxResult.codespace}, raw_log: ${storeCodeTxResult.raw_log}`
   );
 }
-
+ 
 const {
   store_code: { code_id },
 } = storeCodeTxResult.logs[0].eventsByType;
 
 console.log(code_id);
+let data = JSON.stringify(code_id[0]);
+fs.writeFileSync('code_id.json', data);

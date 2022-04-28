@@ -1,5 +1,7 @@
 import { client, wallets } from '../library.js';
 
+import fs from "fs";
+
 import {
   MsgExecuteContract,
   MnemonicKey,
@@ -9,9 +11,12 @@ import {
 
 const wallet = wallets.wallet_testnetyk;
 
-const price_contract = "terra15wwpcv7ze99jk5vwru7ntjf9a77ydljuw727c5";
+//const contract_address = "terra15wwpcv7ze99jk5vwru7ntjf9a77ydljuw727c5";
+let contract_address_rawdata = fs.readFileSync('contract_address.json');
+let contract_address = JSON.parse(contract_address_rawdata);
+console.log(contract_address);
 
-const response = await client.wasm.contractQuery(price_contract, { query_price: {} });
+const response = await client.wasm.contractQuery(contract_address, { query_price: {} });
 
 console.log(response);
 

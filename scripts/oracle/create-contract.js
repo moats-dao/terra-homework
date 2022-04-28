@@ -1,19 +1,21 @@
 import { client, wallets } from "../library.js";
 
-import { MsgInstantiateContract } from '@terra-money/terra.js';
+import { MsgInstantiateContract, isTxError } from '@terra-money/terra.js';
 
 const wallet = wallets.wallet_testnetyk;
 
-const code_id = ['68112']
+import fs from "fs";
+let code_id_rawdata = fs.readFileSync('code_id.json');
+let code_id = JSON.parse(code_id_rawdata);
+console.log(code_id);
 
 const instantiate = new MsgInstantiateContract(
   wallet.key.accAddress,
-  code_id[0], // code ID
-  {
-    //count: 0,
-  }, // InitMsg
-  { uluna: 1000000, uusd: 1000000 }, // init coins
-  false // migratable
+  wallet.key.accAddress,
+  parseInt(code_id), // code ID
+  { price: "123" }, // InitMsg
+  //{ uluna: 1000000, uusd: 1000000 }, // init coins
+  {} // init coins
 );
 
 const instantiateTx = await wallet.createAndSignTx({
@@ -34,3 +36,5 @@ const {
 } = instantiateTxResult.logs[0].eventsByType;
 
 console.log(contract_address);
+let data = JSON.stringify(contract_address);
+fs.writeFileSync('contract_address.json', data);

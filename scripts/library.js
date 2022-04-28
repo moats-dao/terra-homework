@@ -1,7 +1,6 @@
-//'use strict';
+'use strict';
 
 // import fs from "fs";
-
 // let keys_rawdata = fs.readFileSync('keys.json');
 // let keys = JSON.parse(keys_rawdata);
 // console.log(keys);

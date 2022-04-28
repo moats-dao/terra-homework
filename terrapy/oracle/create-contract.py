@@ -28,12 +28,13 @@ terra = LCDClient(
 test1 = terra.wallet(MnemonicKey(mnemonic=walletMnemonics["testnetyk"]['mnemonic']))
 
 instantiate = MsgInstantiateContract(
-    test1.key.acc_address,
-    test1.key.acc_address,
-    int(code_id),
-    {},
-    #{"uluna": 1000000, "uusd": 1000000}
-    {}
+    sender=test1.key.acc_address,
+    admin=test1.key.acc_address,
+    code_id=int(code_id),
+    init_msg={ "price": "23" },    # InitMsg
+    #{},    # InitMsg
+    init_coins={}  # init coins
+    #{"uluna": 1000000, "uusd": 1000000}  # init coins
 )
 instantiate_tx = test1.create_and_sign_tx(CreateTxOptions(msgs=[instantiate]))
 instantiate_tx_result = terra.tx.broadcast(instantiate_tx)
