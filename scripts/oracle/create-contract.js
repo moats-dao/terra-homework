@@ -4,15 +4,15 @@ import { MsgInstantiateContract } from '@terra-money/terra.js';
 
 const wallet = wallets.wallet_testnetyk;
 
-const code_id = ['67854']
+const code_id = ['68112']
 
 const instantiate = new MsgInstantiateContract(
   wallet.key.accAddress,
-  +code_id[0], // code ID
+  code_id[0], // code ID
   {
     //count: 0,
   }, // InitMsg
-  { uluna: 10000000, ukrw: 1000000 }, // init coins
+  { uluna: 1000000, uusd: 1000000 }, // init coins
   false // migratable
 );
 
