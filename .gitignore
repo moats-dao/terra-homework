@@ -1,8 +1,19 @@
-target/
+# general
+.DS_Store
 node_modules/
-contracts/*/src/packages
-contracts/*/target
+
+# Rust/CosmWasm specific
+target/
 artifacts/
 contracts/*/artifacts
-.DS_Store
+contracts/*/src/packages
+contracts/*/target
+
+# This repo specific
 keys.terrain.js
+keys.json
+code_id.json
+contract_address.json
+
+# VSCode related
+launch.json
